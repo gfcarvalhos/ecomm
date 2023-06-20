@@ -1,0 +1,648 @@
+openapi: 3.0.1
+info:
+  title: API de Categorias
+  description: "API de listagem de categorias"
+  version: 1.0.0
+  contact:
+    name: Suporte a Devs
+    email: gfcarvalho@gmail.com
+    url: https://github.com/gfcarvalhos
+  license:
+    name: "Lincença: GPLv3"
+    url: https://www.gnu.org/licenses/gpl-3.0.html
+externalDocs:
+  description: Link desenvolvedor
+  url: https://github.com/gfcarvalhos
+tags: 
+- name: Categories - Essentials
+  description: Ações de taks essentials
+- name: Categories - Admin
+  description: Ações de tasks desejáveis
+- name: Products
+  description: CRUD de Produtos
+- name: Clients
+  description: CRUD de Clientes
+- name: Orders
+  description: Pedidos
+servers:
+  - url: http://localhost:3000/
+paths:
+  /api/categories:
+    get:
+      tags:
+      - Categories - Essentials
+      summary: Lista das categorias
+      description: "Retorna a lista completa de categorias"
+      responses:
+        '200':
+          description: Sucesso
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Categories"
+        '404':
+          description: Não há categorias cadastradas
+          content:
+            application/json:
+              example: "Not Found"
+              
+  /api/admin/categories:
+    post:
+      tags:
+      - Categories - Essentials
+      summary: Insere nova categoria
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                nome:
+                  type: string
+        required: true
+      security: 
+      - auth: []
+      responses:
+        '201':
+          description: "Sucesso"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Category"
+                
+  /api/categories/{id}:
+    get:
+      tags:
+      - Categories - Essentials
+      summary: Retorna categoria com id especificado
+      parameters:
+      - name: id
+        in: path
+        schema:
+          type: integer
+        required: true
+      responses:
+        '200':
+          description: Sucesso
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Categories"
+        '404':
+          description: Não há categorias cadastradas
+          content:
+            application/json:
+              example: "Not Found"
+              
+  /api/admin/categories/{id}:
+    put:
+      tags:
+      - Categories - Admin
+      summary: Alteração dos dados de uma categoria
+      parameters: 
+      - name: id
+        in: path
+        description: ID da categoria a ser atualizada
+        schema:
+          type: string
+        required: true
+      requestBody:
+        description: Atualiza os dados de categoria já existentes
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Category"
+      responses:
+        '200':
+          description: Categoria atualizada com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Category"
+        '404':
+          description: Erro de atualização
+          content:
+            application/json:
+              example: "Erro durante atualização"
+    delete:
+      tags:
+      - Categories - Admin
+      summary: Deleta categoria
+      parameters: 
+      - name: id
+        in: path
+        description: ID da categoria a ser deletada
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Categoria deletada
+          content:
+            application/json:
+              example: "Categoria deletada"
+        '404':
+          description: Erro de execução
+          content:
+            application/json:
+              example: "Erro durante a execução"
+              
+  /api/admin/categories/active/{id}:
+    put:
+      tags:
+      - Categories - Admin
+      summary: Alteração dos dados de uma categoria
+      parameters: 
+      - name: id
+        in: path
+        description: ID da categoria a ser atualizada
+        schema:
+          type: string
+        required: true
+      responses:
+        '200':
+          description: Categoria ativada
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Category"
+        '404':
+          description: Erro na atualização
+          content:
+            application/json:
+              example: "Erro durante atualização"
+              
+  /api/admin/products:
+    post:
+      tags:
+      - Products
+      summary: Adiciona produto
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Product"
+        required: true
+      responses:
+        '201':
+          description: Produto adicionado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Product"
+        '404':
+          description: Erro ao adicionar produto
+          content:
+            application/json:
+              example: "Erro ao adicionar produto"
+              
+  /api/products:
+    get:
+      tags:
+      - Products
+      summary: Lista todos os produtos
+      parameters: 
+      - in: query
+        name: category
+        description: Filtra por categoria
+        schema:
+          type: string
+      - in: query
+        name: minPrice
+        description: Preço mínimo
+        schema:
+          type: number
+      - in: query
+        name: maxPrice
+        description: Preço máximo
+        schema:
+          type: number
+      - in: query
+        name: minEstoque
+        description: Estoque mínimo
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Sucesso
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Products"
+        '404':
+          description: Falha ao executar
+          content:
+            application/json:
+              example: "Falha ao executar"
+                  
+  /api/products/{id}:
+    get:
+      tags:
+      - Products
+      summary: Lista todos os produtos
+      parameters:
+      - name: id
+        in: path
+        description: ID do produto a ser requisitado
+        schema:
+          type: integer
+        required: true
+      responses:
+        '200':
+          description: Sucesso
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Product"
+  
+  /api/admin/products/{id}:
+    put:
+      tags:
+      - Products
+      summary: Alteração dos dados de um produto
+      parameters: 
+      - name: id
+        in: path
+        description: ID do produto a ser atualizado
+        schema:
+          type: string
+        required: true
+      requestBody:
+        description: Dados do produto atualizados
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Product"
+      responses:
+        '200':
+          description: Produto atualizado com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Product"
+        '404':
+          description: Erro de atualização
+          content:
+            application/json:
+              example: "Erro durante atualização" 
+              
+    delete:
+      tags:
+      - Products
+      summary: Deleta produto
+      parameters: 
+      - name: id
+        in: path
+        description: ID do produto a ser deletado
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Produto deletado
+          content:
+            application/json:
+              example: "Produto deletado"
+        '404':
+          description: Erro de execução
+          content:
+            application/json:
+              example: "Erro durante a execução"
+              
+  /api/admin/clients:
+    post:
+      tags:
+      - Clients
+      summary: Adiciona cliente
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NewClient"
+        required: true
+      responses:
+        '201':
+          description: Cliente criado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Client"
+        '404':
+          description: Erro ao criar novo cliente
+          content:
+            application/json:
+              example: "Erro ao criar novo cliente"  
+    get:
+      tags:
+      - Clients
+      summary: Lista de todos os clientes
+      responses:
+        '200':
+          description: Sucesso
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Clients"
+        '404':
+          description: Falha ao executar
+          content:
+            application/json:
+              example: "Falha ao executar"
+  
+  /api/clients/{id}:
+    get:
+      tags:
+      - Clients
+      summary: Lista cliente com ID especificado
+      parameters:
+      - name: id
+        in: path
+        description: ID do cliente a ser requisitado
+        schema:
+          type: integer
+        required: true
+      responses:
+        '200':
+          description: Sucesso
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Client"
+        '404':
+          description: Falha ao executar
+          content:
+            application/json:
+              example: "Falha ao executar"
+  
+  /api/admin/clients/{id}:
+    put:
+      tags:
+      - Clients
+      summary: Alteração dos dados de um cliente
+      parameters: 
+      - name: id
+        in: path
+        description: ID do cliente a ser atualizado
+        schema:
+          type: string
+        required: true
+      requestBody:
+        description: Dados do cliente atualizados
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Client"
+      responses:
+        '200':
+          description: Cliente atualizado com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Client"
+        '404':
+          description: Erro de atualização
+          content:
+            application/json:
+              example: "Erro durante atualização" 
+              
+    delete:
+      tags:
+      - Clients
+      summary: Deleta cliente
+      parameters: 
+      - name: id
+        in: path
+        description: ID do cliente a ser deletado
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Produto deletado
+          content:
+            application/json:
+              example: "Produto deletado"
+        '404':
+          description: Erro de execução
+          content:
+            application/json:
+              example: "Erro durante a execução"
+              
+  /api/orders:
+    post:
+      tags:
+      - Orders
+      summary: Cria pedido
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NewOrder"
+        required: true
+      responses:
+        '201':
+          description: Pedido criado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Order"
+        '404':
+          description: Erro ao criar novo pedido
+          content:
+            application/json:
+              example: "Erro ao criar novo pedido"
+              
+  /api/orders/{id}:
+    get:
+      tags:
+      - Orders
+      summary: Lista pedido com ID especificado
+      parameters: 
+      - name: id
+        in: path
+        schema:
+          type: integer
+        required: true
+      responses:
+        '200':
+          description: Sucesso
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Order"
+        '404':
+          description: Falha ao executar
+          content:
+            application/json:
+              example: "Falha ao executar"
+      
+components:
+  schemas:
+    Category:
+      type: object
+      properties:
+        id:
+          type: integer
+        nome:
+          type: string
+        status:
+          type: string
+    Categories:
+      type: array
+      items:
+        $ref: "#/components/schemas/Category"
+    Product:
+      type: object
+      properties:
+        id:
+          type: integer
+        nome:
+          type: string
+        descricao:
+          type: string
+        slug:
+          type: string
+        precoUnit:
+          type: number
+        estoque:
+          type: integer
+    Products:
+      type: array
+      items:
+        $ref: "#/components/schemas/Product"
+    NewClient:
+      type: object
+      properties:
+        id:
+          type: integer
+        nome:
+          type: string
+        email:
+          type: string
+        senha:
+          type: string
+        cpf:
+          type: string
+        telefone:
+          type: string
+        logradouro:
+          type: string
+        numeroEndereco:
+          type: string
+        complemento:
+          type: string
+        cep:
+          type: string
+        cidade:
+          type: string
+        estado:
+          type: string
+    Client:
+      type: object
+      properties:
+        id:
+          type: integer
+        nome:
+          type: string
+        email:
+          type: string
+        senha:
+          type: string
+        cpf:
+          type: string
+        telefone:
+          type: string
+        logradouro:
+          type: string
+        numeroEndereco:
+          type: string
+        complemento:
+          type: string
+        cep:
+          type: string
+        cidade:
+          type: string
+        estado:
+          type: string
+        dataCriacao:
+          type: string
+          format: date
+    Clients:
+      type: array
+      items:
+        $ref: "#/components/schemas/Client"
+        
+    NewOrder:
+      type: object
+      properties:
+        id_cliente:
+          type: integer
+        ruaEntrega:
+          type: string
+        numeroEntregada:
+          type: string
+        complementoEntrega:
+          type: string
+        cepEntrega:
+          type: string
+        cidadeEntrega:
+          type: string
+        estadoEntrega:
+          type: string
+        itensEntrega:
+          type: array
+          items:
+            $ref : "#/components/schemas/NewItens"
+    
+    NewItens:
+      type: object
+      properties:
+        id:
+          type: integer
+        quantidade:
+          type: string
+        desconto:
+          type: number
+              
+    Itens:
+      type: object
+      properties:
+        id:
+          type: integer
+        quantidade:
+          type: string
+        desconto:
+          type: number        
+        dataCriacao:
+          type: string
+          format: date
+          
+    Order:
+      type: object
+      properties:
+        id_cliente:
+          type: integer
+        ruaEntrega:
+          type: string
+        numeroEntregada:
+          type: string
+        complementoEntrega:
+          type: string
+        cepEntrega:
+          type: string
+        cidadeEntrega:
+          type: string
+        estadoEntrega:
+          type: string
+        itensEntrega:
+          type: array
+          items:
+            $ref : "#/components/schemas/Itens"
+              
+            
+  securitySchemes:
+    auth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      
